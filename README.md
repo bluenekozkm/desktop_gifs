@@ -16,13 +16,25 @@ YouTube's mobile app can attach a GIF to a comment; the desktop site has no butt
 
 Desktop GIFs is not on the Chrome Web Store. Load it from this folder:
 
+### Chrome
+
 1. Download or clone this repository.
 2. Open `chrome://extensions`.
 3. Turn on **Developer mode** (top right).
 4. Click **Load unpacked** and choose the `extension` folder.
 5. Reload any YouTube tabs that were already open.
 
-It needs Chrome 111 or newer. Other Chromium browsers should work but are untested. Firefox is not supported.
+It needs Chrome 111 or newer. Other Chromium browsers should work but are untested.
+
+### Firefox
+
+1. Download or clone this repository.
+2. Open `about:debugging#/runtime/this-firefox`.
+3. Click **Load Temporary Add-on…** and choose `extension/manifest.json`.
+4. Click the Desktop GIFs icon in the toolbar and press **Allow Tenor access**. Firefox does not grant the Tenor permission on install the way Chrome does, so search stays off until you allow it once.
+5. Reload any YouTube tabs that were already open.
+
+It needs Firefox 128 or newer. Temporary add-ons are removed when Firefox closes; load it again for each session.
 
 ## Use
 
@@ -56,7 +68,8 @@ If YouTube does not send the comment by itself, the picker asks you to press the
 | --- | --- | --- |
 | `src/content.js`, `src/content.css` | YouTube page, isolated world | Adds the GIF button and the picker |
 | `src/main.js` | YouTube page, main world | Rewrites the comment request so it carries the GIF |
-| `src/sw.js` | Service worker | Fetches search results from tenor.com |
+| `src/sw.js` | Background (service worker on Chrome, event page on Firefox) | Fetches search results from tenor.com |
+| `src/popup.html`, `src/popup.js` | Toolbar popup | Lets you grant the tenor.com permission on Firefox |
 
 When you pick a GIF, the content script adds a one-time marker to the comment box and presses YouTube's own Comment button. YouTube builds and signs the request as usual. The main-world script catches that request, removes the marker and adds the GIF's Tenor ID. A marker that cannot be turned into a GIF is blocked, so it never appears as comment text.
 

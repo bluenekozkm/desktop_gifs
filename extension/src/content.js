@@ -2,6 +2,10 @@
 // shows the picker, and hands the chosen GIF to the page-world hook (main.js)
 // by submitting a one-time marker through YouTube's own comment box.
 (() => {
+  // Firefox's `chrome` alias is callback-only, so everything goes through
+  // `browser` when it exists (Firefox) and falls back to `chrome` (Chrome,
+  // where MV3 APIs are promise-based).
+  const api = globalThis.browser ?? globalThis.chrome;
   const BOX_SCOPE = 'ytd-comment-simplebox-renderer, ytd-comment-thread-renderer';
   const POST_DIALOG = 'ytd-backstage-post-dialog-renderer';
   const PICKER_W = 340;
@@ -97,6 +101,9 @@
     btn.setAttribute('aria-label', 'Add a GIF');
     btn.setAttribute('aria-haspopup', 'dialog');
     btn.setAttribute('aria-expanded', 'false');
+    // The icon is a CSS mask; resolve its URL here so the extension scheme
+    // (chrome-extension:// vs moz-extension://) is correct on every browser.
+    btn.style.setProperty('--gcfy-icon', `url("${api.runtime.getURL('icons/icon.svg')}")`);
     btn.addEventListener('click', (e) => {
       e.preventDefault();
       e.stopPropagation();
@@ -225,7 +232,7 @@
     setStatus(text ? 'Searching…' : 'Loading…');
     let reply;
     try {
-      reply = await chrome.runtime.sendMessage(
+      reply = await api.runtime.sendMessage(
         !text ? { type: 'featured' } : looksLikeLink(text) ? { type: 'resolve', input: text } : { type: 'search', query: text },
       );
     } catch (e) {

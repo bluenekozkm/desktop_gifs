@@ -21,14 +21,16 @@ html[dark] .gcfy-btn {
   color: #f1f1f1;
 }
 
-/* icons/icon.svg is used as a mask so it takes the button's text colour. */
+/* icons/icon.svg is used as a mask so it takes the button's text colour.
+   The URL is set per button from content.js via --gcfy-icon, because the
+   extension scheme differs between browsers (chrome-extension vs moz-extension). */
 .gcfy-btn::before {
   content: "";
   width: 24px;
   height: 24px;
   background-color: currentColor;
-  -webkit-mask: url("chrome-extension://__MSG_@@extension_id__/icons/icon.svg") center / contain no-repeat;
-  mask: url("chrome-extension://__MSG_@@extension_id__/icons/icon.svg") center / contain no-repeat;
+  -webkit-mask: var(--gcfy-icon) center / contain no-repeat;
+  mask: var(--gcfy-icon) center / contain no-repeat;
 }
 
 .gcfy-btn:hover,
